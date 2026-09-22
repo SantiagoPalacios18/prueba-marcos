@@ -1,9 +1,10 @@
 import { useState } from "react"
 import axios  from 'axios'
+import { useNavigate } from 'react-router-dom'
 
-function Register() {
+function Register(props) {
     
-    const [user, setUser] = useState('')
+    const Navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [cont, setCont] = useState('')
     const [vcont, setVcont] = useState('')
@@ -17,21 +18,39 @@ function Register() {
         }
 
         try{
-            const response = await axios.post('localhost:3000/user', {
-                user,
-                email,
-                cont
+            console.log("aca anda")
+            console.log(user, email, cont)
+            const response = await axios.post("http://localhost:3000/users/register", {
+                name: user,
+                email: email,
+                password: cont
             })
-            const token = await axios.post('localhost:3000/user')
-
-
+            console.log("El coso se envia")
+            if(!response){
+                console.log("Error - No se pudo registrar correctamente")
+                return
+            }
+            console.log(response.data)
+            const token = await axios.post('http://localhost:3000/users/login', {
+                email: response.data.email,
+                password: cont
+            })
+            console.log("el token se crea")
+            localStorage.setItem('token', token.data)
+            location.reload()
         }catch(error){
+            console.log("no anda :(")
+            console.log({error})
             return
         }
     }
 
+    if(props.user){
+        Navigate('/')
+    }
+
     return (<>
-            <h1>Este es el Register</h1>
+            <h1>Este es el Register</h1>    
             <form onSubmit={handleSubmit}>
                 <input type="text" required onChange={(event) => setUser(event.target.value)} placeholder="Username"/>
                 <input type="email" required onChange={(event) => setEmail(event.target.value)} placeholder="Email"/>

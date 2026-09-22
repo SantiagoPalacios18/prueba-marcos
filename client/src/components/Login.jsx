@@ -1,11 +1,14 @@
 import { useEffect } from "react"
 import { useState } from "react"
 import axios  from 'axios'
-function Login() {
-
+import { useNavigate } from "react-router-dom"
+function Login(props) {
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
     const [enviar, setEviar] = useState(true)
+    const [process, setP] = useState(true)
+    
+    const Navigate = useNavigate()
 
     const changeEmail = (event) => {
         setEmail(event.target.value)
@@ -25,12 +28,17 @@ function Login() {
         })
         console.log(token);
         localStorage.setItem('token', token.data)
+        setP(!process)
+        location.reload()
     }
 
     useEffect(() => {
         fetchLogin()
     }, [enviar])
 
+    if(props.user){
+        Navigate('/')
+    }
 
     return (<>
         <h1>Este es el Login</h1>
